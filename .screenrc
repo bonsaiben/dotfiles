@@ -1,0 +1,28 @@
+startup_message off
+
+term screen-256color
+attrcolor b ".I"
+# Tell screen how to set colors. AB = background, AF=foreground
+termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
+# Erase background with current bg color.  Not needed if TERM=screen-256color
+# defbce "on"
+
+defscrollback 2048
+
+screen  -t rs   1
+screen  -t git  2
+screen  -t vim  3
+screen  -t test 4
+screen  -t log  5
+screen  -t dj   6
+select 2
+
+
+# hardstatus alwayslastline
+# hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][%{B} %m-%d %{W}%c %{g}]'
+# hardstatus alwayslastline "%?%-Lw%?%n*%f %t%?(%u)%?%?%+Lw%?"
+
+
+# hardstatus alwayslastline "%{bw}%= %{+b ky}| %c:%s |%{+b rw} ip: %2` | vpn: %3`"
+hardstatus alwayslastline "%-Lw%{= rW}%50>%n%f* %t%{-}%+Lw%<"
+# hardstatus alwayslastline "%-Lw%{= H}%50>%n%f* %t%{-}%+Lw%< %=[%c:%s, %D, %d/%m/%y]"
