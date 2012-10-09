@@ -113,10 +113,10 @@ augroup END
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 map <leader>y "*y
 " Move around splits with <c-hjkl>
-nnoremap <c-j> <c-w>j
-nnoremap <c-k> <c-w>k
-nnoremap <c-h> <c-w>h
-nnoremap <c-l> <c-w>l
+"nnoremap <c-j> <c-w>j
+"nnoremap <c-k> <c-w>k
+"nnoremap <c-h> <c-w>h
+"nnoremap <c-l> <c-w>l
 " Insert a hash rocket with <c-l>
 imap <c-l> <space>=><space>
 " Can't be bothered to understand ESC vs <c-c> in insert mode
@@ -127,7 +127,34 @@ function! MapCR()
 endfunction
 call MapCR()
 nnoremap <leader><leader> <c-^>
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" MOVE IF THERE IS A SPLIT, SPLIT+MOVE IF THERE IS NOT
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! MoveOrSplit(direction)
+  let maxwidth = 181
+  let maxheight = 49
+  let has_no_vsplit = winnr('$') < 2 || winwidth(0) == maxwidth
+  let has_no_split = winnr('$') < 2 || winheight(0) == maxheight
+  if a:direction == 'j' || a:direction == 'k'
+    if has_no_split
+      :split
+    end
+  else
+    if has_no_vsplit
+      :vsplit
+    end
+  end
+  :exec "normal \<c-w>" . a:direction
+endfunction
 
+:command! MoveOrSplitDown :call MoveOrSplit('j')
+:command! MoveOrSplitUp :call MoveOrSplit('k')
+:command! MoveOrSplitRight :call MoveOrSplit('l')
+:command! MoveOrSplitLeft :call MoveOrSplit('h')
+:map <c-j> :MoveOrSplitDown<cr>
+:map <c-k> :MoveOrSplitUp<cr>
+:map <c-l> :MoveOrSplitRight<cr>
+:map <c-h> :MoveOrSplitLeft<cr>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MULTIPURPOSE TAB KEY
 " Indent if we're at the beginning of a line. Else, do completion.
