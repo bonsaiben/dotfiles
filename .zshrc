@@ -44,6 +44,11 @@ export ACK_COLOR_MATCH='red'
 # ACTUAL CUSTOMIZATION OH NOES!
 gd() { git diff $* | view -; }
 gdc() { gd --cached $*; }
+grepalc() { grep -r $* app/ lib/ config/ }
+grepalcs() { grep -r $* app/ lib/ config/ spec/ }
+grepspec() { grep -r $* spec/ }
+stage() { heroku $* --remote staging }
+honban() { heroku $* --remote production }
 alias pygrep="grep --include='*.py' $*"
 alias rbgrep="grep --include='*.rb' $*"
 alias r=rails
