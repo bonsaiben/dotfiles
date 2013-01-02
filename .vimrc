@@ -119,6 +119,13 @@ augroup END
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MISC KEY MAPS
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+nnoremap cu ct_
+nnoremap du dt_
+"nnoremap cU c/\u<cr>
+"nnoremap dU d/\u<cr>:nohlsearch<cr>
+"nnoremap <leader>gu f_
+"nnoremap <leader>gU /\u<cr>:nohlsearch<cr>
+
 map <leader>y "*y
 " Move around splits with <c-hjkl>
 "nnoremap <c-j> <c-w>j
