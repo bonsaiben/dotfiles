@@ -125,6 +125,7 @@ set listchars=trail:.
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 nnoremap cu ct_
 nnoremap du dt_
+nnoremap Y y$
 "nnoremap cU c/\u<cr>
 "nnoremap dU d/\u<cr>:nohlsearch<cr>
 "nnoremap <leader>gu f_
