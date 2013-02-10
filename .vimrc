@@ -307,9 +307,9 @@ map <leader>gm :CtrlPClearCache<cr>:CtrlP app/models<cr>
 map <leader>gh :CtrlPClearCache<cr>:CtrlP app/helpers<cr>
 map <leader>gl :CtrlPClearCache<cr>:CtrlP lib<cr>
 map <leader>gp :CtrlPClearCache<cr>:CtrlP public<cr>
-map <leader>gs :CtrlPClearCache<cr>:CtrlP public/stylesheets/sass<cr>
 map <leader>gf :CtrlPClearCache<cr>:CtrlP features<cr>
 map <leader>gg :topleft 100 :split Gemfile<cr>
+map <leader>gs :topleft 100 :split db/schema.rb<cr>
 "map <leader>gt :CommandTTag<cr>
 map <leader>f :CtrlPClearCache<cr>:CtrlP<cr>
 map <leader>F :CtrlPClearCache<cr>:CtrlP %%<cr>
