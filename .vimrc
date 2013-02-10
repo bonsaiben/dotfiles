@@ -429,3 +429,9 @@ command! OpenChangedFiles :call OpenChangedFiles()
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 command! InsertTime :normal a<c-r>=strftime('%F %H:%M:%S.0 %z')<cr>
 
+""""""""""""""""""""""""""""""
+" Miscellaneous Commands
+""""""""""""""""""""""""""""""
+command! Zshrc :tabnew ~/.zshrc
+command! Vimrc :tabnew ~/.vimrc
+command! Source :source ~/.vimrc
