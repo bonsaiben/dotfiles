@@ -216,6 +216,7 @@ function! RenameFile()
         redraw!
     endif
 endfunction
+:command! Rename :call RenameFile()
 map <leader>n :call RenameFile()<cr>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
