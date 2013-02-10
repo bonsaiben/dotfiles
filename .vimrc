@@ -151,20 +151,19 @@ nnoremap <leader><leader> <c-^>
 " MOVE IF THERE IS A SPLIT, SPLIT+MOVE IF THERE IS NOT
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! MoveOrSplit(direction)
-  let maxwidth = 181
-  let maxheight = 49
-  let has_no_vsplit = winnr('$') < 2 || winwidth(0) == maxwidth
-  let has_no_split = winnr('$') < 2 || winheight(0) == maxheight
-  if a:direction == 'j' || a:direction == 'k'
-    if has_no_split
-      :split
-    end
-  else
-    if has_no_vsplit
-      :vsplit
-    end
-  end
+  let cur_pane1 = winnr()
   :exec "normal \<c-w>" . a:direction
+  let cur_pane2 = winnr()
+  let under_four_splits = winnr('$') < 4
+  let same_pane = cur_pane1 == cur_pane2
+  if same_pane
+    if a:direction == 'j' || a:direction == 'k'
+      :split
+    else
+      :vsplit
+    endif
+    :exec "normal \<c-w>" . a:direction
+  endif
 endfunction
 
 :command! MoveOrSplitDown :call MoveOrSplit('j')
