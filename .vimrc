@@ -4,6 +4,10 @@
 call pathogen#runtime_append_all_bundles()
 set runtimepath^=~/.vim/bundle/ctrlp.vim
 
+
+set dictionary+=~/.vim/snippets/dict.txt
+set complete+=k
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " BASIC EDITING CONFIGURATION
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -83,6 +87,7 @@ augroup vimrcEx
 
   autocmd BufRead *.mkd  set ai formatoptions=tcroqn2 comments=n:&gt;
   autocmd BufRead *.markdown  set ai formatoptions=tcroqn2 comments=n:&gt;
+  autocmd BufRead *.scss  set ai formatoptions=tcqn2 comments=n:&gt;
 
   " Indent p tags
   autocmd FileType html,eruby if g:html_indent_tags !~ '\\|p\>' | let g:html_indent_tags .= '\|p\|li\|dt\|dd' | endif
@@ -409,3 +414,8 @@ command! OpenChangedFiles :call OpenChangedFiles()
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 command! InsertTime :normal a<c-r>=strftime('%F %H:%M:%S.0 %z')<cr>
 
+command! Camel :s/\%V\(\<\|_\)\([a-z]\)/\u\2/g
+map <leader>c vaw:<bs><bs><bs><bs><bs>Camel<cr>n:nohlsearch<cr>
+command! Vimrc :e $MYVIMRC
+command! Source :source $MYVIMRC
+command! Zshrc :e ~/.zshrc
