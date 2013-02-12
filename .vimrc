@@ -5,7 +5,12 @@ call pathogen#runtime_append_all_bundles()
 set runtimepath^=~/.vim/bundle/ctrlp.vim
 
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" DICTIONARIES
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 set dictionary+=~/.vim/snippets/dict.txt
+" include dictionaries in default autocomplete
 set complete+=k
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -87,7 +92,9 @@ augroup vimrcEx
 
   autocmd BufRead *.mkd  set ai formatoptions=tcroqn2 comments=n:&gt;
   autocmd BufRead *.markdown  set ai formatoptions=tcroqn2 comments=n:&gt;
-  autocmd BufRead *.scss  set ai formatoptions=tcqn2 comments=n:&gt;
+  "autocmd BufRead *.scss  set ai formatoptions=tcqn2 comments=n:&gt;
+  autocmd BufRead *.scss  set ai formatoptions-=c formatoptions-=r formatoptions-=o
+  autocmd BufRead *.scss.erb  set ai formatoptions-=c formatoptions-=r formatoptions-=o
 
   " Indent p tags
   autocmd FileType html,eruby if g:html_indent_tags !~ '\\|p\>' | let g:html_indent_tags .= '\|p\|li\|dt\|dd' | endif
@@ -101,11 +108,14 @@ augroup vimrcEx
   autocmd! CmdwinLeave * :call MapCR()
 augroup END
 
+set list
+set listchars=trail:.
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " COLOR
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 :set t_Co=256 " 256 colors
-:set background=light
+:set background=dark
 :color solarized
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -116,6 +126,14 @@ augroup END
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MISC KEY MAPS
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+nnoremap cu ct_
+nnoremap du dt_
+nnoremap Y y$
+"nnoremap cU c/\u<cr>
+"nnoremap dU d/\u<cr>:nohlsearch<cr>
+"nnoremap <leader>gu f_
+"nnoremap <leader>gU /\u<cr>:nohlsearch<cr>
+
 map <leader>y "*y
 " Move around splits with <c-hjkl>
 "nnoremap <c-j> <c-w>j
@@ -136,20 +154,19 @@ nnoremap <leader><leader> <c-^>
 " MOVE IF THERE IS A SPLIT, SPLIT+MOVE IF THERE IS NOT
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! MoveOrSplit(direction)
-  let maxwidth = 181
-  let maxheight = 49
-  let has_no_vsplit = winnr('$') < 2 || winwidth(0) == maxwidth
-  let has_no_split = winnr('$') < 2 || winheight(0) == maxheight
-  if a:direction == 'j' || a:direction == 'k'
-    if has_no_split
-      :split
-    end
-  else
-    if has_no_vsplit
-      :vsplit
-    end
-  end
+  let cur_pane1 = winnr()
   :exec "normal \<c-w>" . a:direction
+  let cur_pane2 = winnr()
+  let under_four_splits = winnr('$') < 4
+  let same_pane = cur_pane1 == cur_pane2
+  if same_pane
+    if a:direction == 'j' || a:direction == 'k'
+      :split
+    else
+      :vsplit
+    endif
+    :exec "normal \<c-w>" . a:direction
+  endif
 endfunction
 
 :command! MoveOrSplitDown :call MoveOrSplit('j')
@@ -202,6 +219,7 @@ function! RenameFile()
         redraw!
     endif
 endfunction
+:command! Rename :call RenameFile()
 map <leader>n :call RenameFile()<cr>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -286,18 +304,18 @@ function! ShowRoutes()
   :normal dd
 endfunction
 map <leader>gR :call ShowRoutes()<cr>
-map <leader>gv :CtrlP app/views<cr>
-map <leader>gc :CtrlP app/controllers<cr>
-map <leader>gm :CtrlP app/models<cr>
-map <leader>gh :CtrlP app/helpers<cr>
-map <leader>gl :CtrlP lib<cr>
-map <leader>gp :CtrlP public<cr>
-map <leader>gs :CtrlP public/stylesheets/sass<cr>
-map <leader>gf :CtrlP features<cr>
+map <leader>gv :CtrlPClearCache<cr>:CtrlP app/views<cr>
+map <leader>gc :CtrlPClearCache<cr>:CtrlP app/controllers<cr>
+map <leader>gm :CtrlPClearCache<cr>:CtrlP app/models<cr>
+map <leader>gh :CtrlPClearCache<cr>:CtrlP app/helpers<cr>
+map <leader>gl :CtrlPClearCache<cr>:CtrlP lib<cr>
+map <leader>gp :CtrlPClearCache<cr>:CtrlP public<cr>
+map <leader>gf :CtrlPClearCache<cr>:CtrlP features<cr>
 map <leader>gg :topleft 100 :split Gemfile<cr>
+map <leader>gs :topleft 100 :split db/schema.rb<cr>
 "map <leader>gt :CommandTTag<cr>
-map <leader>f :CtrlP<cr>
-map <leader>F :CtrlP %%<cr>
+map <leader>f :CtrlPClearCache<cr>:CtrlP<cr>
+map <leader>F :CtrlPClearCache<cr>:CtrlP %%<cr>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " SWITCH BETWEEN TEST AND PRODUCTION CODE
@@ -414,8 +432,11 @@ command! OpenChangedFiles :call OpenChangedFiles()
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 command! InsertTime :normal a<c-r>=strftime('%F %H:%M:%S.0 %z')<cr>
 
+""""""""""""""""""""""""""""""
+" Miscellaneous Commands
+""""""""""""""""""""""""""""""
 command! Camel :s/\%V\(\<\|_\)\([a-z]\)/\u\2/g
 map <leader>c vaw:<bs><bs><bs><bs><bs>Camel<cr>n:nohlsearch<cr>
-command! Vimrc :e $MYVIMRC
-command! Source :source $MYVIMRC
-command! Zshrc :e ~/.zshrc
+command! Zshrc :tabnew ~/.zshrc
+command! Vimrc :tabnew ~/.vimrc
+command! Source :source ~/.vimrc

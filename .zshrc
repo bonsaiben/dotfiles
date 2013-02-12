@@ -44,13 +44,21 @@ export ACK_COLOR_MATCH='red'
 # ACTUAL CUSTOMIZATION OH NOES!
 gd() { git diff $* | view -; }
 gdc() { gd --cached $*; }
+grepalc() { grep -r $* app lib config }
+grepalcs() { grep -r $* app lib config spec }
+grepspec() { grep -r $* spec }
+stage() { heroku $* --remote staging }
+honban() { heroku $* --remote production }
 alias pygrep="grep --include='*.py' $*"
 alias rbgrep="grep --include='*.rb' $*"
 alias r=rails
 alias t="script/test $*"
 alias f="script/features $*"
 alias g="bundle exec guard $*"
-alias sr="screen -r"
+alias sr="tmux attach"
+alias resource="source ~/.zshrc"
+alias zshrc="vi ~/.zshrc"
+alias vimrc="vi ~/.vimrc"
 alias gx="gitx"
 alias gxa="gitx --all"
 function mcd() { mkdir -p $1 && cd $1 }
