@@ -4,14 +4,15 @@
 call pathogen#runtime_append_all_bundles()
 set runtimepath^=~/.vim/bundle/ctrlp.vim
 
+let g:ctrlp_map = '<Nop>'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " DICTIONARIES
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-set dictionary+=~/.vim/snippets/dict.txt
+"set dictionary+=~/.vim/snippets/dict.txt
 " include dictionaries in default autocomplete
-set complete+=k
+"set complete+=k
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " BASIC EDITING CONFIGURATION
@@ -88,7 +89,7 @@ augroup vimrcEx
   autocmd FileType ruby,haml,eruby,yaml,html,javascript,sass,cucumber set ai sw=2 sts=2 et
   autocmd FileType python set sw=4 sts=4 et
 
-  autocmd! BufRead,BufNewFile *.sass setfiletype sass 
+  autocmd! BufRead,BufNewFile *.sass setfiletype sass
 
   autocmd BufRead *.mkd  set ai formatoptions=tcroqn2 comments=n:&gt;
   autocmd BufRead *.markdown  set ai formatoptions=tcroqn2 comments=n:&gt;
@@ -97,7 +98,7 @@ augroup vimrcEx
   autocmd BufRead *.scss.erb  set ai formatoptions-=c formatoptions-=r formatoptions-=o
 
   " Indent p tags
-  autocmd FileType html,eruby if g:html_indent_tags !~ '\\|p\>' | let g:html_indent_tags .= '\|p\|li\|dt\|dd' | endif
+  "autocmd FileType html,eruby if g:html_indent_tags !~ '\\|p\>' | let g:html_indent_tags .= '\|p\|li\|dt\|dd' | endif
 
   " Don't syntax highlight markdown because it's often wrong
   autocmd! FileType mkd setlocal syn=off
@@ -133,8 +134,12 @@ nnoremap Y y$
 "nnoremap dU d/\u<cr>:nohlsearch<cr>
 "nnoremap <leader>gu f_
 "nnoremap <leader>gU /\u<cr>:nohlsearch<cr>
+"
+nnoremap <leader>c :q<cr>
 
-map <leader>y "*y
+nmap <leader>yj YjPlD
+
+" map <leader>y "*y
 " Move around splits with <c-hjkl>
 "nnoremap <c-j> <c-w>j
 "nnoremap <c-k> <c-w>k
@@ -150,6 +155,10 @@ function! MapCR()
 endfunction
 call MapCR()
 nnoremap <leader><leader> <c-^>
+nnoremap <c-p> :tabp<cr>
+nnoremap <c-n> :tabn<cr>
+nnoremap <c-t> :tabnew<cr>
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MOVE IF THERE IS A SPLIT, SPLIT+MOVE IF THERE IS NOT
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -177,20 +186,21 @@ endfunction
 :map <c-k> :MoveOrSplitUp<cr>
 :map <c-l> :MoveOrSplitRight<cr>
 :map <c-h> :MoveOrSplitLeft<cr>
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MULTIPURPOSE TAB KEY
 " Indent if we're at the beginning of a line. Else, do completion.
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! InsertTabWrapper()
-    let col = col('.') - 1
-    if !col || getline('.')[col - 1] !~ '\k'
-        return "\<tab>"
-    else
-        return "\<c-p>"
-    endif
-endfunction
-inoremap <tab> <c-r>=InsertTabWrapper()<cr>
-inoremap <s-tab> <c-n>
+"function! InsertTabWrapper()
+"    let col = col('.') - 1
+"    if !col || getline('.')[col - 1] !~ '\k'
+"        return "\<tab>"
+"    else
+"        return "\<c-p>"
+"    endif
+"endfunction
+"inoremap <tab> <c-r>=InsertTabWrapper()<cr>
+"inoremap <s-tab> <c-n>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ARROW KEYS ARE UNACCEPTABLE
@@ -205,7 +215,7 @@ map <Down> <Nop>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 cnoremap %% <C-R>=expand('%:h').'/'<cr>
 map <leader>e :edit %%
-map <leader>v :view %%
+"map <leader>v :view %%
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " RENAME CURRENT FILE
@@ -220,68 +230,68 @@ function! RenameFile()
     endif
 endfunction
 :command! Rename :call RenameFile()
-map <leader>n :call RenameFile()<cr>
+"map <leader>n :call RenameFile()<cr>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " PROMOTE VARIABLE TO RSPEC LET
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! PromoteToLet()
-  :normal! dd
-  " :exec '?^\s*it\>'
-  :normal! P
-  :.s/\(\w\+\) = \(.*\)$/let(:\1) { \2 }/
-  :normal ==
-endfunction
-:command! PromoteToLet :call PromoteToLet()
-:map <leader>p :PromoteToLet<cr>
+"function! PromoteToLet()
+"  :normal! dd
+"  " :exec '?^\s*it\>'
+"  :normal! P
+"  :.s/\(\w\+\) = \(.*\)$/let(:\1) { \2 }/
+"  :normal ==
+"endfunction
+":command! PromoteToLet :call PromoteToLet()
+":map <leader>p :PromoteToLet<cr>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " EXTRACT VARIABLE (SKETCHY)
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! ExtractVariable()
-    let name = input("Variable name: ")
-    if name == ''
-        return
-    endif
-    " Enter visual mode (not sure why this is needed since we're already in
-    " visual mode anyway)
-    normal! gv
-
-    " Replace selected text with the variable name
-    exec "normal c" . name
-    " Define the variable on the line above
-    exec "normal! O" . name . " = "
-    " Paste the original selected text to be the variable value
-    normal! $p
-endfunction
-vnoremap <leader>rv :call ExtractVariable()<cr>
+"function! ExtractVariable()
+"    let name = input("Variable name: ")
+"    if name == ''
+"        return
+"    endif
+"    " Enter visual mode (not sure why this is needed since we're already in
+"    " visual mode anyway)
+"    normal! gv
+"
+"    " Replace selected text with the variable name
+"    exec "normal c" . name
+"    " Define the variable on the line above
+"    exec "normal! O" . name . " = "
+"    " Paste the original selected text to be the variable value
+"    normal! $p
+"endfunction
+"vnoremap <leader>rv :call ExtractVariable()<cr>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " INLINE VARIABLE (SKETCHY)
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! InlineVariable()
-    " Copy the variable under the cursor into the 'a' register
-    :let l:tmp_a = @a
-    :normal "ayiw
-    " Delete variable and equals sign
-    :normal 2daW
-    " Delete the expression into the 'b' register
-    :let l:tmp_b = @b
-    :normal "bd$
-    " Delete the remnants of the line
-    :normal dd
-    " Go to the end of the previous line so we can start our search for the
-    " usage of the variable to replace. Doing '0' instead of 'k$' doesn't
-    " work; I'm not sure why.
-    normal k$
-    " Find the next occurence of the variable
-    exec '/\<' . @a . '\>'
-    " Replace that occurence with the text we yanked
-    exec ':.s/\<' . @a . '\>/' . @b
-    :let @a = l:tmp_a
-    :let @b = l:tmp_b
-endfunction
-nnoremap <leader>ri :call InlineVariable()<cr>
+"function! InlineVariable()
+"    " Copy the variable under the cursor into the 'a' register
+"    :let l:tmp_a = @a
+"    :normal "ayiw
+"    " Delete variable and equals sign
+"    :normal 2daW
+"    " Delete the expression into the 'b' register
+"    :let l:tmp_b = @b
+"    :normal "bd$
+"    " Delete the remnants of the line
+"    :normal dd
+"    " Go to the end of the previous line so we can start our search for the
+"    " usage of the variable to replace. Doing '0' instead of 'k$' doesn't
+"    " work; I'm not sure why.
+"    normal k$
+"    " Find the next occurence of the variable
+"    exec '/\<' . @a . '\>'
+"    " Replace that occurence with the text we yanked
+"    exec ':.s/\<' . @a . '\>/' . @b
+"    :let @a = l:tmp_a
+"    :let @b = l:tmp_b
+"endfunction
+"nnoremap <leader>ri :call InlineVariable()<cr>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MAPS TO JUMP TO SPECIFIC COMMAND-T TARGETS AND FILES
@@ -303,19 +313,25 @@ function! ShowRoutes()
   " Delete empty trailing line
   :normal dd
 endfunction
+
 map <leader>gR :call ShowRoutes()<cr>
-map <leader>gv :CtrlPClearCache<cr>:CtrlP app/views<cr>
-map <leader>gc :CtrlPClearCache<cr>:CtrlP app/controllers<cr>
-map <leader>gm :CtrlPClearCache<cr>:CtrlP app/models<cr>
-map <leader>gh :CtrlPClearCache<cr>:CtrlP app/helpers<cr>
+map <leader>gav :CtrlPClearCache<cr>:CtrlP app/views<cr>
+map <leader>gac :CtrlPClearCache<cr>:CtrlP app/controllers<cr>
+map <leader>gam :CtrlPClearCache<cr>:CtrlP app/models<cr>
+map <leader>gaa :CtrlPClearCache<cr>:CtrlP app/assets<cr>
+map <leader>gah :CtrlPClearCache<cr>:CtrlP app/helpers<cr>
+map <leader>gc :CtrlPClearCache<cr>:CtrlP config<cr>
 map <leader>gl :CtrlPClearCache<cr>:CtrlP lib<cr>
+map <leader>gs :CtrlPClearCache<cr>:CtrlP spec<cr>
 map <leader>gp :CtrlPClearCache<cr>:CtrlP public<cr>
 map <leader>gf :CtrlPClearCache<cr>:CtrlP features<cr>
 map <leader>gg :topleft 100 :split Gemfile<cr>
-map <leader>gs :topleft 100 :split db/schema.rb<cr>
+map <leader>gds :topleft 100 :split db/schema.rb<cr>
+map <leader>gdm :CtrlPClearCache<cr>:CtrlP db/migrate<cr>
 "map <leader>gt :CommandTTag<cr>
 map <leader>f :CtrlPClearCache<cr>:CtrlP<cr>
 map <leader>F :CtrlPClearCache<cr>:CtrlP %%<cr>
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " SWITCH BETWEEN TEST AND PRODUCTION CODE
@@ -351,10 +367,10 @@ nnoremap <leader>. :call OpenTestAlternate()<cr>
 " RUNNING TESTS
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 map <leader>t :call RunTestFile()<cr>
-map <leader>T :call RunNearestTest()<cr>
-map <leader>a :call RunTests('')<cr>
-map <leader>c :w\|:!script/features<cr>
-map <leader>w :w\|:!script/features --profile wip<cr>
+"map <leader>T :call RunNearestTest()<cr>
+"map <leader>a :call RunTests('')<cr>
+map <leader>rc :w\|:!rake cucumber<cr>
+"map <leader>w :w\|:!script/features --profile wip<cr>
 
 function! RunTestFile(...)
     if a:0
@@ -386,12 +402,12 @@ endfunction
 function! RunTests(filename)
     " Write the file and run tests for the given filename
     :w
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
+    ":silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
+    ":silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
+    ":silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
+    ":silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
+    ":silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
+    ":silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
     if match(a:filename, '\.feature$') != -1
         exec ":!script/features " . a:filename
     else
@@ -403,6 +419,28 @@ function! RunTests(filename)
             exec ":!rspec --color " . a:filename
         end
     end
+endfunction
+
+function! RunZeusTestFile(...)
+    if a:0
+        let command_suffix = a:1
+    else
+        let command_suffix = ""
+    endif
+
+    " Run the tests for the previously-marked file.
+    let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\)$') != -1
+    if in_test_file
+        call SetTestFile()
+    elseif !exists("t:grb_test_file")
+        return
+    end
+    call RunZeusTests(t:grb_test_file . command_suffix)
+endfunction
+
+function! RunZeusTests(filename)
+    :w
+    exec ":silent !tmux select-window -t spec; tmux send-keys 'zeus test " . a:filename . "' 'C-m'"
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -435,8 +473,45 @@ command! InsertTime :normal a<c-r>=strftime('%F %H:%M:%S.0 %z')<cr>
 """"""""""""""""""""""""""""""
 " Miscellaneous Commands
 """"""""""""""""""""""""""""""
-command! Camel :s/\%V\(\<\|_\)\([a-z]\)/\u\2/g
-map <leader>c vaw:<bs><bs><bs><bs><bs>Camel<cr>n:nohlsearch<cr>
+"command! Camel :s/\%V\(\<\|_\)\([a-z]\)/\u\2/g
+"map <leader>c vaw:<bs><bs><bs><bs><bs>Camel<cr>n:nohlsearch<cr>
 command! Zshrc :tabnew ~/.zshrc
 command! Vimrc :tabnew ~/.vimrc
 command! Source :source ~/.vimrc
+
+command! Copyfn :silent !echo % | tr -d "\n" | pbcopy
+
+function! OpenLastMigration()
+  let migration = system('ls db/migrate | tail -n 1')
+  exec "edit db/migrate/" . migration
+endfunction
+command! OpenLastMigration call OpenLastMigration()
+map <leader>gdml :OpenLastMigration<cr>
+
+function! VisorCommand(command)
+  exec "silent !tmux new-window 'zsh'; tmux send-keys '" . a:command . "' 'C-m'"
+endfunction
+command! -nargs=1 Visor call VisorCommand(<f-args>)
+
+function! VisorRunCommand(command)
+  exec "silent !DIR=`pwd`; tmux select-window -t run; tmux send-keys \"cd $DIR; " . a:command . "\" 'C-m'"
+endfunction
+command! -nargs=1 VisorRun call VisorRunCommand(<f-args>)
+
+function! RestartRails()
+  if filereadable("Procfile")
+      exec ":VisorRun reforeman;exit"
+  else
+      exec ":VisorRun rerails;exit"
+  end
+endfunction
+command! RestartRails :call RestartRails()
+
+map <leader>vm :VisorRun migrate<cr>
+map <leader>vrgm :VisorRun rails g migration 
+map <leader>vr :VisorRun rake 
+map <leader>vrr :RestartRails<cr>
+map <leader>vb :VisorRun bundle<cr>
+
+map <leader>zz :VisorRun rezeus<cr>
+map <leader>zt :call RunZeusTestFile()<cr>
